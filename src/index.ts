@@ -81,7 +81,7 @@ function messageHandler(ws: connection, message: IncomingMessage) {
                 roomId: payload.roomId,
                 message: payload.message,
                 name: user.name,
-                upvotes: 0
+                upvotes: chat.upvotes.length
             }
         }
         userManager.broadcast(payload.roomId, payload.userId, outgoingPayload);
@@ -90,11 +90,9 @@ function messageHandler(ws: connection, message: IncomingMessage) {
     if (message.type === SupportedMessage.UpvoteMessage) {
         const payload = message.payload;
         const chat = store.upvote(payload.userId, payload.roomId, payload.chatId);
-        console.log("inside upvote")
         if (!chat) {
             return;
         }
-        console.log("inside upvote 2")
 
         const outgoingPayload: OutgoingMessage= {
             type: OutgoingSupportedMessages.UpdateChat,
@@ -104,8 +102,6 @@ function messageHandler(ws: connection, message: IncomingMessage) {
                 upvotes: chat.upvotes.length
             }
         }
-
-        console.log("inside upvote 3")
         userManager.broadcast(payload.roomId, payload.userId, outgoingPayload);
     }
 }

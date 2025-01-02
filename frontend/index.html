@@ -16,8 +16,9 @@
       );
     };
 
-    ws.onmessage = function () {
-      alert("Message received!");
+    ws.onmessage = function (event) {
+      const message = JSON.parse(event.data);
+      displayMessage(message);
     };
 
     ws.onerror = function (error) {
@@ -43,12 +44,23 @@
         );
         document.getElementById("inputtext").value = "";
         document.getElementById("inputtext").focus();
-
-        // Trigger an alert when the button is clicked
-        alert("Message sent: " + message);
       } else {
         alert("Please enter a message before sending.");
       }
+    }
+
+    function displayMessage(message) {
+      const { chatId, roomId, message: msg, name, upvotes } = message.payload;
+      let sectionId = "all-chats";
+      if (upvotes > 20) {
+        sectionId = "upvotes-20";
+      } else if (upvotes > 10) {
+        sectionId = "upvotes-10";
+      }
+      const section = document.getElementById(sectionId);
+      const chatElement = document.createElement("div");
+      chatElement.textContent = `${name}: ${msg} (Upvotes: ${upvotes})`;
+      section.appendChild(chatElement);
     }
   </script>
   Hello, world!
@@ -56,4 +68,13 @@
   <input type="text" id="inputtext" />
   <br />
   <button onclick="sendChat()">Send Chat</button>
+  <div id="all-chats">
+    <h2>All Chats</h2>
+  </div>
+  <div id="upvotes-10">
+    <h2>Chats with >10 Upvotes</h2>
+  </div>
+  <div id="upvotes-20">
+    <h2>Chats with >20 Upvotes</h2>
+  </div>
 </body>
