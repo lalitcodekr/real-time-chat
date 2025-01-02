@@ -1,0 +1,59 @@
+<head> </head>
+<body>
+  <script>
+    const ws = new WebSocket("ws://localhost:8080", "echo-protocol");
+
+    ws.onopen = function () {
+      ws.send(
+        JSON.stringify({
+          type: "JOIN_ROOM",
+          payload: {
+            name: "lalit",
+            userId: "1",
+            roomId: "2",
+          },
+        })
+      );
+    };
+
+    ws.onmessage = function () {
+      alert("Message received!");
+    };
+
+    ws.onerror = function (error) {
+      console.error("WebSocket Error: ", error);
+    };
+
+    ws.onclose = function () {
+      console.log("WebSocket connection closed.");
+    };
+
+    function sendChat() {
+      const message = document.getElementById("inputtext").value;
+      if (message.trim()) {
+        ws.send(
+          JSON.stringify({
+            type: "SEND_MESSAGE",
+            payload: {
+              name: message,
+              userId: "1",
+              roomId: "2",
+            },
+          })
+        );
+        document.getElementById("inputtext").value = "";
+        document.getElementById("inputtext").focus();
+
+        // Trigger an alert when the button is clicked
+        alert("Message sent: " + message);
+      } else {
+        alert("Please enter a message before sending.");
+      }
+    }
+  </script>
+  Hello, world!
+  <br />
+  <input type="text" id="inputtext" />
+  <br />
+  <button onclick="sendChat()">Send Chat</button>
+</body>
